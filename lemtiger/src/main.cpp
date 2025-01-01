@@ -1,5 +1,7 @@
 #include "main.h"
 #include "lemlib/api.hpp" // IWYU pragma: keep
+#include "pros/llemu.hpp"
+
 
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
@@ -80,6 +82,7 @@ void on_center_button() {
 	} else {
 		pros::lcd::clear_line(2);
 	}
+	
 }
 
 
@@ -124,7 +127,62 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+
+int auton_selection = 0; // Global variable to store selected autonomous routine
+
+// List of autonomous routines
+const char* auton_names[] = {
+    "Blue Right Side",
+    "Blue Left Side",
+    "Red Right Side",
+    "Red Left Side",
+    "Skills",
+    "None"
+};
+
+void display_auton_selector() {
+    // Clear the screen
+    for (int i = 0; i < 8; i++) {
+        pros::lcd::clear_line(i);
+    }
+    //pros::lcd::clear();
+    // Display options
+    pros::lcd::set_text(0, "Select Autonomous:");
+    for (int i = 0; i < 6; i++) {
+        if (i == auton_selection) {
+            pros::lcd::print(i + 1, "> %s <", auton_names[i]); // Highlight the selected routine
+        } else {
+            pros::lcd::print(i + 1, "  %s", auton_names[i]);
+        }
+    }
+}
+
+void competition_initialize() {
+    pros::lcd::initialize();
+
+    display_auton_selector();
+
+    // Wait for the user to select an autonomous routine
+    while (true) {
+        if (pros::lcd::read_buttons() & LCD_BTN_LEFT) {
+            auton_selection = (auton_selection - 1 + 6) % 6; // Cycle backward through the options
+            display_auton_selector();
+            pros::delay(200); // Debounce
+        }
+        if (pros::lcd::read_buttons() & LCD_BTN_RIGHT) {
+            auton_selection = (auton_selection + 1) % 6; // Cycle forward through the options
+            display_auton_selector();
+            pros::delay(200); // Debounce
+        }
+        if (pros::lcd::read_buttons() & LCD_BTN_CENTER) {
+            pros::lcd::print(7, "Autonomous Selected: %s", auton_names[auton_selection]);
+            pros::delay(1000); // Confirm selection
+            break;
+        }
+        pros::delay(20); // Reduce CPU usage
+    }
+	
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -137,8 +195,29 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
-
+void autonomous() {
+    switch (auton_selection) {
+        case 0:
+            blueRightSide();
+            break;
+        case 1:
+            blueLeftSide();
+            break;
+        case 2:
+            redRightSide();
+            break;
+        case 3:
+            redLeftSide();
+            break;
+        case 4:
+            skills();
+            break;
+        default:
+            // No autonomous selected
+            break;
+    }
+}
+ 
 /**
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via

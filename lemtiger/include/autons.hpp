@@ -1,7 +1,15 @@
-//initialize routes
+#pragma once
 
-void BlueRightSide();
-void BlueLeftSide();
-void RedRightSide();
-void RedLeftSide();
+#include "lemlib/api.hpp"
+
+// Declare a chassis 
+extern lemlib::Chassis chassis;
+
+// Declare functions for autonomous routines
+void blueRightSide();
+void blueLeftSide();
+void redRightSide();
+void redLeftSide();
 void skills();
+
+

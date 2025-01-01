@@ -4,16 +4,16 @@
 
 //add lemlib configs
 
-void BlueRightSide(){
+void blueRightSide(){
 }
 
-void BlueLeftSide(){
+void blueLeftSide(){
 }
 
-void RedRightSide(){
+void redRightSide(){
 }
 
-void RedLeftSide(){
+void redLeftSide(){
 }
 
 void skills(){
