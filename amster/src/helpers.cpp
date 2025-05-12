@@ -5,6 +5,11 @@ void setIntake(int intakePower){
     
 }
 
+void runIntake(int pos, int intakePower){
+    fintake.move_relative(pos, intakePower);
+}
+
+
 void monitorIntake(int intakePower) {
     intake11W.move(intakePower); // Set the intake motor to the desired power
     int stuckTime = 0;

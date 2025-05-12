@@ -13,28 +13,42 @@ const int SWING_SPEED = 100;
 ///
 // Constants
 ///
+
+
 void default_constants() {
-  //chassis.pid_drive_constants_forward_set(23, 0.026, 100);
-  //chassis.pid_drive_constants_backward_set(26, 0.011, 99.5);
+  chassis.pid_drive_constants_forward_set(10, 0.026, 100);
+  chassis.pid_drive_constants_backward_set(8, 0.011, 99.5);
 
   chassis.pid_heading_constants_set(11, 0, 20);
-  chassis.pid_drive_constants_set(16, 0.026, 100); //23
-  chassis.pid_turn_constants_set(4.2, 0.05, 22.25, 15);
-  chassis.pid_swing_constants_set(8.2, 0.01, 73.75);
+  //chassis.pid_drive_constants_set(5, 0.026, 100); //23
+  chassis.pid_turn_constants_set(4, 0.05, 22.25, 15);
+  chassis.pid_swing_constants_set(9.2, 0.01, 73.75);
 
   chassis.pid_turn_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(80_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(80_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(80_ms, 1_in, 250_ms, 3_in, 400_ms, 400_ms);
 
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
 
   chassis.slew_drive_constants_set(7_in, 80);
+  liftPID.exit_condition_set(80, 50, 300, 150, 500, 500);
+
+}
+
+void lift_auto(double target) {
+ liftPID.target_set(target);
+  ez::exit_output exit = ez::RUNNING;
+  while (liftPID.exit_condition(ladyB, true) == ez::RUNNING) {
+    set_lift(liftPID.compute(ladyB.get_position()));
+    pros::delay(ez::util::DELAY_TIME);
+  }
+  set_lift(0);
 }
 
 void BlueRightSide(){
-  chassis.pid_drive_set(-17_in,90);
+  chassis.pid_drive_set(-16.5_in,90);
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(ez::RIGHT_SWING, 10_deg, SWING_SPEED, 5);
   chassis.pid_wait_quick_chain();
@@ -43,74 +57,119 @@ void BlueRightSide(){
   mogoMech.extend();
   pros::delay(800); //tweak based on mogo time
   setIntake(100);
-  chassis.pid_turn_set(-96.5_deg, 40);
+  chassis.pid_turn_set(-105_deg, 80);
   chassis.pid_wait();
-  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_drive_set(23_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_drive_set(40_in, 10); //so ring has time to reach mogo
+   setIntake(-110);
+  pros::delay(100);
+  setIntake(110);
+  pros::delay(100);
+  chassis.pid_drive_set(5_in, 10); //so ring has time to reach mogo
   chassis.pid_wait();
-  //to get top 2 rings
-  chassis.pid_drive_set(-23_in, DRIVE_SPEED); 
+ //top 2 rings
+  chassis.pid_swing_set(ez::RIGHT_SWING, -200_deg, SWING_SPEED, 10);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(2_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_swing_set(ez::RIGHT_SWING, -172_deg, SWING_SPEED, 40);
+  pros::delay(500);
+    setIntake(-110);
+  pros::delay(150);
+  setIntake(110);
+  pros::delay(200);
+   chassis.pid_swing_set(ez::RIGHT_SWING, -160_deg, SWING_SPEED, 53);
   chassis.pid_wait();
-  chassis.pid_drive_set(1_in, DRIVE_SPEED); 
+    chassis.pid_turn_set(-205_deg, 80);
   chassis.pid_wait();
-  setIntake(115);
-  pros::delay(1000);
-  chassis.pid_swing_set(ez::LEFT_SWING, -240_deg, SWING_SPEED, 40);
+    chassis.pid_drive_set(24_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_turn_relative_set(60_deg, 80);
+  pros::delay(500);
+  chassis.pid_swing_set(ez::RIGHT_SWING, -40_deg, SWING_SPEED, 15);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(25_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_drive_set(19_in, DRIVE_SPEED); 
-  chassis.pid_wait();
-  pros::delay(1000);
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED); 
-  chassis.pid_wait();
-
-  // chassis.pid_drive_set(-7_in, DRIVE_SPEED); 
-  // chassis.pid_wait();
 
 }
 
 void BlueLeftSide(){
-  chassis.pid_drive_set(-17_in,90);
+  // while(true){
+  //   ez::screen_print(util::to_string_with_precision(eye.get_proximity()), 3);
+  // }
+
+  chassis.pid_drive_set(-16.5_in,90);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(ez::LEFT_SWING, -10_deg, SWING_SPEED, 5);
+  chassis.pid_swing_set(ez::RIGHT_SWING, 10_deg, SWING_SPEED, 5);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(ez::RIGHT_SWING, 3_deg, SWING_SPEED, 5);
+  chassis.pid_swing_set(ez::LEFT_SWING, -3_deg, SWING_SPEED, 9);
   chassis.pid_wait();
   mogoMech.extend();
   pros::delay(800); //tweak based on mogo time
-  setIntake(100);
-  chassis.pid_turn_set(96.5_deg, 40);
+  setIntake(110);
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
   chassis.pid_wait();
-  chassis.pid_drive_set(23_in, DRIVE_SPEED);
+  mogoMech.retract();
+  runIntake(-100, 550);
+  pros::delay(200);
+  setIntake(110);
+  chassis.pid_swing_set(ez::LEFT_SWING, 117_deg, SWING_SPEED, 68);
   chassis.pid_wait();
-  chassis.pid_drive_set(40_in, 10); //so ring has time to reach mogo
+  pros::delay(85);
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait();
+  setIntake(0);
+   chassis.pid_drive_set(-19_in,100);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-3_in,50);
+  chassis.pid_wait();
+  mogoMech.extend();
+      pros::delay(500);
+    setIntake(110);
+  chassis.pid_drive_set(20.5_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  pros::delay(500);
+
+
 
 }
 void RedRightSide(){
-  chassis.pid_drive_set(-17_in,90);
+  chassis.pid_drive_set(-16.5_in,90);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(ez::LEFT_SWING, -10_deg, SWING_SPEED, 5);
+  chassis.pid_swing_set(ez::RIGHT_SWING, 10_deg, SWING_SPEED, 5);
   chassis.pid_wait_quick_chain();
-  chassis.pid_swing_set(ez::RIGHT_SWING, 3_deg, SWING_SPEED, 5);
+  chassis.pid_swing_set(ez::LEFT_SWING, -3_deg, SWING_SPEED, 9);
   chassis.pid_wait();
   mogoMech.extend();
   pros::delay(800); //tweak based on mogo time
-  setIntake(100);
-  chassis.pid_turn_set(-96.5_deg, 40);
+  setIntake(110);
+  chassis.pid_turn_set(-90_deg, TURN_SPEED);
   chassis.pid_wait();
-  chassis.pid_drive_set(23_in, DRIVE_SPEED);
+  mogoMech.retract();
+  runIntake(-100, 550);
+  pros::delay(200);
+  setIntake(110);
+  chassis.pid_swing_set(ez::RIGHT_SWING, -117_deg, SWING_SPEED, 68);
   chassis.pid_wait();
-  chassis.pid_drive_set(40_in, 10); //so ring has time to reach mogo
+  pros::delay(85);
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait();
+  setIntake(0);
+   chassis.pid_drive_set(-19_in,100);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-3_in,50);
+  chassis.pid_wait();
+  mogoMech.extend();
+  pros::delay(500);
+    setIntake(110);
+  chassis.pid_drive_set(20.5_in, DRIVE_SPEED);
+  chassis.pid_wait();
+    pros::delay(500);
+
+  
+
 }
 
 void RedLeftSide(){
-  chassis.pid_drive_set(-17_in,90);
+  chassis.pid_drive_set(-16.5_in,90);
   chassis.pid_wait_quick_chain();
   chassis.pid_swing_set(ez::RIGHT_SWING, 10_deg, SWING_SPEED, 5);
   chassis.pid_wait_quick_chain();
@@ -119,87 +178,261 @@ void RedLeftSide(){
   mogoMech.extend();
   pros::delay(800); //tweak based on mogo time
   setIntake(100);
-  chassis.pid_turn_set(96.5_deg, 40);
+  chassis.pid_turn_set(105_deg, 80);
   chassis.pid_wait();
-  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_drive_set(23_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_drive_set(40_in, 10); //so ring has time to reach mogo
+   setIntake(-110);
+  pros::delay(100);
+  setIntake(110);
+  pros::delay(100);
+  chassis.pid_drive_set(6_in, 10); //so ring has time to reach mogo
   chassis.pid_wait();
-  //to get top 2 rings
-  chassis.pid_drive_set(-23_in, DRIVE_SPEED); 
+ //top 2 rings
+  chassis.pid_swing_set(ez::LEFT_SWING, 200_deg, SWING_SPEED, 10);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(2_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_swing_set(ez::LEFT_SWING, 172_deg, SWING_SPEED, 40);
+    pros::delay(500);
+      setIntake(-110);
+  pros::delay(100);
+  setIntake(110);
+  pros::delay(100);
+   chassis.pid_swing_set(ez::LEFT_SWING, 160_deg, SWING_SPEED, 53);
   chassis.pid_wait();
-  chassis.pid_drive_set(1_in, DRIVE_SPEED); 
+    chassis.pid_turn_set(205_deg, 80);
   chassis.pid_wait();
-  setIntake(115);
-  pros::delay(1000);
-  chassis.pid_swing_set(ez::RIGHT_SWING, 240_deg, SWING_SPEED, 40);
+    chassis.pid_drive_set(23.5_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_turn_relative_set(-60_deg, 80);
-  chassis.pid_wait();
-  chassis.pid_drive_set(19_in, DRIVE_SPEED); 
-  chassis.pid_wait();
-  pros::delay(1000);
-  chassis.pid_drive_set(-7_in, DRIVE_SPEED); 
-  chassis.pid_wait();
+  pros::delay(500);
+  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+   setIntake(-110);
+  pros::delay(100);
+  setIntake(110);
+  pros::delay(500);
+
 
 }
 
 void skills(){  
-  chassis.pid_swing_set(ez::LEFT_SWING, -25_deg, SWING_SPEED, 35);
-  chassis.pid_wait_quick();
+  setIntake(110);
+  pros::delay(300);
+  setIntake(0);
+  pros::delay(200);
+  
+  chassis.pid_drive_set(16_in, DRIVE_SPEED);
+  chassis.pid_wait();
 
+  chassis.pid_turn_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-18_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  
+  chassis.pid_drive_set(-1_in, 50);
+  chassis.pid_wait_quick();
+  
   mogoMech.extend();
-  pros::delay(500);
+  pros::delay(200);
+
+  chassis.pid_drive_set(-9_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  setIntake(115);
   
-  setIntake(450);
-
-  chassis.pid_turn_relative_set(-145_deg, 60);
+  chassis.pid_drive_set(22_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(23_in, DRIVE_SPEED);
+  chassis.pid_turn_set(86_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(82_deg, TURN_SPEED);
+  setIntake(-110);
+  pros::delay(150);
+  setIntake(110);
+  pros::delay(200);
+
+
+  chassis.pid_drive_set(22_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(28.5_in, DRIVE_SPEED);
+  pros::delay(700);
+
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(90_deg, TURN_SPEED);
+  setIntake(-110);
+  pros::delay(150);
+  setIntake(115);
+
+  chassis.pid_drive_set(20_in, 70);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(38.5_in, DRIVE_SPEED);
+  chassis.pid_drive_set(15.5_in, 40);
   chassis.pid_wait();
 
-  chassis.pid_swing_set(ez::LEFT_SWING, -30_deg, SWING_SPEED, 35);
-  chassis.pid_wait_quick();
+  setIntake(-110);
+  pros::delay(200);
+  setIntake(110);
 
-  chassis.pid_turn_relative_set(-70_deg, TURN_SPEED);
-  chassis.pid_wait();
-  
-  chassis.pid_drive_set(15_in, DRIVE_SPEED);
+  chassis.pid_swing_set(ez::LEFT_SWING, 77_deg, SWING_SPEED, 0);
   chassis.pid_wait();
 
-  chassis.pid_turn_relative_set(-95_deg, TURN_SPEED);
+  chassis.pid_drive_set(20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-20_deg, TURN_SPEED);
   chassis.pid_wait();
 
   chassis.pid_drive_set(-15_in, DRIVE_SPEED);
   chassis.pid_wait();
 
   mogoMech.retract();
+  pros::delay(300);
 
-  chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  setIntake(-110);
+  pros::delay(100);
+  setIntake(0);
+  pros::delay(200);
+  chassis.pid_drive_set(11_in, DRIVE_SPEED);
   chassis.pid_wait();
 
-  
-  pros::delay(500); //tweak based on preload
-  // intake11W.move_velocity(0);
+  //_________________________
+  //second mogo
 
-  // chassis.pid_turn_set(180_deg, TURN_SPEED);
-  // chassis.pid_wait();
+  chassis.pid_turn_set(90.3_deg, TURN_SPEED);
+  chassis.pid_wait();
+  
+  chassis.pid_drive_set(-76_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-8_in, 40);
+  chassis.pid_wait();
+  
+  mogoMech.extend();
+  pros::delay(400);
+
+  chassis.pid_drive_set(-3_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  setIntake(115);
+  
+  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(-86_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  setIntake(-115);
+  pros::delay(150);
+  setIntake(110);
+  pros::delay(200);
+
+
+  chassis.pid_drive_set(23_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+
+  chassis.pid_turn_relative_set(-90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  setIntake(-110);
+  pros::delay(150);
+  setIntake(110);
+
+  chassis.pid_drive_set(20_in, 70);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(15.5_in, 40);
+  chassis.pid_wait();
+
+  setIntake(-110);
+  pros::delay(200);
+  setIntake(110);
+
+  chassis.pid_swing_set(ez::RIGHT_SWING, -77_deg, SWING_SPEED, 0);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(20_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  mogoMech.retract();
+  pros::delay(200);
+
+  setIntake(-110);
+  pros::delay(150);
+  setIntake(0);
+    chassis.pid_drive_set(10_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  //wall stake and other 
+
+
+  chassis.pid_turn_set(0, TURN_SPEED); 
+  chassis.pid_wait_quick_chain();
+  setIntake(110);
+  chassis.pid_drive_set(49_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  lift_auto(-350);
+  pros::delay(130);
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_relative_set(-93, TURN_SPEED);
+  chassis.pid_wait();
+  pros::delay(25);
+  setIntake(0);
+  chassis.pid_drive_set(7_in, 50);
+  chassis.pid_wait();
+  lift_auto(-1750);
+  pros::delay(50);
+  lift_auto(-0);
+
+  //corners
+  chassis.pid_drive_set(-7_in, 50);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_relative_set(-32, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-103_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_relative_set(30, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-35_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(85_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_turn_relative_set(25, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(22_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+  pros::delay(100);
+   chassis.pid_turn_relative_set(10, TURN_SPEED);
+  chassis.pid_wait_quick_chain();
+    chassis.pid_drive_set(6_in, DRIVE_SPEED);
+  chassis.pid_wait_quick_chain();
+
+
+
+
+
+
+
 }
+
 
 ///
 // Drive Example

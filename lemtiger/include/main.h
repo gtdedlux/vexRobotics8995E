@@ -38,6 +38,7 @@
 #include "autons.hpp"
 #include "globals.hpp"
 #include "helpers.hpp"
+#include "intakeTasks.hpp"
 
 /**
  * You should add more #includes here
