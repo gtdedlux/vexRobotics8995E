@@ -3,9 +3,12 @@
 
 This repository contains two projects that we progressed on during the 2024-2025 Vex Robotics season (HIGH STAKES). 
 
-[![Partial Autonomous Skills Run(SkillsUSA)](images/robotPic.jpg)](https://youtu.be/Cu_Bh399V9Q)
+[![Partial Autonomous Skills Run (SkillsUSA)](images/robotPic.JPG)](https://youtu.be/Cu_Bh399V9Q)
+🔗 [Partial Autonomous Skills Run (SkillsUSA)](https://youtu.be/Cu_Bh399V9Q)
+
 
 [![ Autonomous Route Run 1/8](images/rushPic.jpg)](https://youtube.com/shorts/MEeVSQBVo3U)
+🔗 [Autonomous Route Run 1/8](https://youtube.com/shorts/MEeVSQBVo3U)
 
 ### Amster Project
 The Amster project utilizes the EZ-Template library. It features completed autonomous routines and relies on the motor's encoders and uses PID controllers for precise movement and control. This project was helpful for consistent, quick, and easy code for all the basic needs of our High Stakes robot. 
