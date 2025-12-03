@@ -1,7 +1,7 @@
 # vexRobotics8995E
-8995E 2024-2025
+8995E 2024-2025 & 2025-2026
 
-This repository contains two projects that we progressed on during the 2024-2025 Vex Robotics season (HIGH STAKES). 
+This repository contains two projects that we progressed on during the 2024-2025 Vex Robotics season (HIGH STAKES) and one project during the 2025-2026 season (PUSH BACK). 
 
 [![Partial Autonomous Skills Run (SkillsUSA)](images/robotPic.JPG)](https://youtu.be/Cu_Bh399V9Q)
 🔗 [Partial Autonomous Skills Run (SkillsUSA)](https://youtu.be/Cu_Bh399V9Q)
